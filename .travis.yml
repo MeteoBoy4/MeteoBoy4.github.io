@@ -1,2 +1,11 @@
 language: node_js
 node_js: stable
+# assign build branches
+branches:
+  only:
+    - source
+
+# cache this directory
+cache:
+  directories:
+    - node_modules
