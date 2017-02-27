@@ -27,4 +27,6 @@ script:
 after_success:
   - git config -global user.name "MeteoBoy4"
   - git config -global user.email "lichiqin4@gmail.com"
-  - echo ${githubToken}
+  - hexo deploy
+
+# E: Build LifeCycle
