@@ -1,0 +1,4 @@
+[submodule "themes/spfk"]
+	path = themes/spfk
+	url = git@github.com:MeteoBoy4/hexo-theme-spfk.git
+	branch = MeteoBoy4

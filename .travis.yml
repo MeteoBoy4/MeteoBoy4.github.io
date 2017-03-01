@@ -19,6 +19,7 @@ before_install:
   - npm install -g hexo-cli
 
 install:
+  - git submodule update --remote
   - npm install
 
 script:
