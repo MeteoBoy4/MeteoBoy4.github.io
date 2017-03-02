@@ -2,3 +2,7 @@
 	path = themes/spfk
 	url = git@github.com:MeteoBoy4/hexo-theme-spfk.git
 	branch = MeteoBoy4
+[submodule "source"]
+	path = source
+	url = git@github.com:MeteoBoy4/MeteoBoy4.post.git
+	branch = master
