@@ -4,10 +4,12 @@
 
 # Site
 title: MeteoBoy4
-subtitle:
-description:
+subtitle: 书写是为了更好地思考
+description: 气象学在读博士
 author: MeteoBoy4
 language:
+- zh-cn
+- en
 timezone:
 
 # URL
