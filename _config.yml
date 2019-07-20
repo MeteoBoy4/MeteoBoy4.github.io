@@ -71,7 +71,7 @@ theme: spfk
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  #  repo: git@github.com:MeteoBoy4/MeteoBoy4.github.io.git
-  repo: https://github.com/MeteoBoy4/MeteoBoy4.github.io
+  repo: git@github.com:MeteoBoy4/MeteoBoy4.github.io.git
+  # repo: https://github.com/MeteoBoy4/MeteoBoy4.github.io
   branch: master
 
