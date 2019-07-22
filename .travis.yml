@@ -17,7 +17,7 @@ before_install:
 # Use sed to replace the SSH URL with the public URL, then initialize submodules
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
-  - openssl aes-256-cbc -K $encrypted_8777397ac9a4_key -iv $encrypted_8777397ac9a4_iv -in ./.travis/id_rsa.enc -out ~/.ssh/id_rsa -d
+  - openssl aes-256-cbc -K $encrypted_514412f25b34_key -iv $encrypted_514412f25b34_iv -in ./.travis/id_rsa.enc -out ~/.ssh/id_rsa -d
   - chmod 600 ~/.ssh/id_rsa
   - eval $(ssh-agent)
   - ssh-add ~/.ssh/id_rsa
@@ -33,8 +33,8 @@ script:
 after_success:
   - git config --global user.name "MeteoBoy4"
   - git config --global user.email "lichiqin4@gmail.com"
-    #  - sed -i” “/^ *repo/s~github\.com~${githubToken}@github.com~” _config.yml
-    #  - sed -i'' "/^ *repo/s~github\.com~${GH_TOKEN}@github.com~" _config.yml
+    #  - sed -i” “/^ *repo/s~github\.com~${githubToken}@github.com~” _config.yml  # Already used 
+    #  ssh to connect github, so not use Github App Token again
   - hexo deploy
 
 # E: Build LifeCycle
