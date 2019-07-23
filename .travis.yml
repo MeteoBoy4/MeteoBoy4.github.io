@@ -16,7 +16,7 @@ git:
 before_install:
 # Use sed to replace the SSH URL with the public URL, then initialize submodules
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-  - git submodule update --init --recursive
+  - git submodule update --init --recursive --remote
   - openssl aes-256-cbc -K $encrypted_514412f25b34_key -iv $encrypted_514412f25b34_iv -in ./.travis/id_rsa.enc -out ~/.ssh/id_rsa -d
   - chmod 600 ~/.ssh/id_rsa
   - eval $(ssh-agent)
