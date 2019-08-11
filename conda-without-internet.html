@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>在无法连外网的服务器上安装Python包（conda） | MeteoBoy4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="服务器无法联网，而我需要安装netCDF4，xarray等第三方Python包，包依赖令人却步。 Conda（Anaconda）成为了救世主。">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在无法连外网的服务器上安装Python包（conda）">
+<meta property="og:url" content="http://www.meteoboy.com/conda-without-internet.html">
+<meta property="og:site_name" content="MeteoBoy4">
+<meta property="og:description" content="服务器无法联网，而我需要安装netCDF4，xarray等第三方Python包，包依赖令人却步。 Conda（Anaconda）成为了救世主。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-08-11T03:12:20.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在无法连外网的服务器上安装Python包（conda）">
+<meta name="twitter:description" content="服务器无法联网，而我需要安装netCDF4，xarray等第三方Python包，包依赖令人却步。 Conda（Anaconda）成为了救世主。">
+  
+    <link rel="alternative" href="/atom.xml" title="MeteoBoy4" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.jpg">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">MeteoBoy4</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">书写是为了更好地思考</p>
+        
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">首页</a></li>
+                        
+                            <li><a href="/archives">所有文章</a></li>
+                        
+                            <li><a href="/tags">标签云</a></li>
+                        
+                            <li><a href="/about">我的故事</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                            
+                                <a class="fl zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                            
+                                <a class="fl weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                            
+                                <a class="fl douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Editor/" style="font-size: 10px;">Editor</a> <a href="/tags/Fortran/" style="font-size: 13.33px;">Fortran</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/NCL/" style="font-size: 10px;">NCL</a> <a href="/tags/Python/" style="font-size: 13.33px;">Python</a> <a href="/tags/VPS/" style="font-size: 10px;">VPS</a> <a href="/tags/WRF/" style="font-size: 20px;">WRF</a> <a href="/tags/WRFDA/" style="font-size: 10px;">WRFDA</a> <a href="/tags/云服务器/" style="font-size: 10px;">云服务器</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/同化/" style="font-size: 10px;">同化</a> <a href="/tags/诊断分析/" style="font-size: 13.33px;">诊断分析</a> <a href="/tags/远程开发/" style="font-size: 10px;">远程开发</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://mindhacks.cn/">刘未鹏</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://seisman.info/">seisman</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">热爱气象 热爱编程 更热爱思考</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">MeteoBoy4</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">MeteoBoy4</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">书写是为了更好地思考</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">首页</a></li>
+                
+                    <li><a href="/archives">所有文章</a></li>
+                
+                    <li><a href="/tags">标签云</a></li>
+                
+                    <li><a href="/about">我的故事</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                    
+                        <a class="zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                    
+                        <a class="weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                    
+                        <a class="douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-conda-without-internet" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/conda-without-internet.html" class="article-date">
+      <time datetime="2017-07-21T20:51:38.000Z" itemprop="datePublished">2017-07-21</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      在无法连外网的服务器上安装Python包（conda）
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>服务器无法联网，而我需要安装netCDF4，xarray等第三方Python包，包依赖令人却步。</p>
+<p>Conda（Anaconda）成为了救世主。</p>
+<a id="more"></a>
+<h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>编写的Python程序计算耗时越来越长，在自己台式机上跑已经愈发困难（心疼），故需要将其移植到服务器上，但手头有的服务器均无法连接外网，而我的程序需要用到诸如netCDF4、xarray等第三方包，如若手动安装，复杂（不熟悉）的包依赖关系令人却步，故而想到求救Anaconda。</p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><h3 id="安装anaconda"><a href="#安装anaconda" class="headerlink" title="安装anaconda"></a>安装anaconda</h3><p>从<a href="https://www.continuum.io/downloads" target="_blank" rel="noopener">官网</a>上下载anaconda安装包，传至服务器后直接进行安装（可选择自定义安装目录）。</p>
+<h3 id="建立本地库镜像"><a href="#建立本地库镜像" class="headerlink" title="建立本地库镜像"></a>建立本地库镜像</h3><p>直接安装单个包会有依赖冲突，故我们在可以上网的机器上使用wget将anaconda<a href="https://repo.continuum.io/pkgs/free/" target="_blank" rel="noopener">官方库集合</a>（的一部分）下载到本地，以期作为一个本地库的镜像供远程服务器使用。注意官方库并非将每个包的元信息写在单个文件中，而是将所有包的信息写在一个repodata.json以及repodata.json.bz2中。</p>
+<p>由于暂时只用Python2.7，所以下载的时候也只下载对应版本的包以减少下载量（一些包不含有版本信息，所以不能只下2.7，而是要用排除法排除其他Python版本对应的包），下载命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -r --no-parent -R --regex-type pcre --reject-regex <span class="string">'(.*py26.*)|(.*py3[3456].*)'</span> https://repo.continuum.io/pkgs/free/linux-64</span><br></pre></td></tr></table></figure></p>
+<p>以及repo.continuum.io/pkgs/free/noarch的内容（不然conda会警告）。</p>
+<p>按照如上方法下载下来约有18G。</p>
+<h3 id="在服务器上测试"><a href="#在服务器上测试" class="headerlink" title="在服务器上测试"></a>在服务器上测试</h3><p>将下载下来的包使用rsync（这样更新时会便捷些）上传至不能联外网的服务器。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -av --delete -r 本地目录 远程目录</span><br></pre></td></tr></table></figure>
+<p>这样服务器上的这一目录便成为我们自己建立的一个channel，我们希望可以通过用其自动检测依赖关系，安装相应的Python包。</p>
+<p>包的搜索：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda search -c file://Path_to_your_channel/repo.continuum.io/pkgs/free --override-channels --offline 包名称</span><br></pre></td></tr></table></figure>
+<p>包的更新（安装）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda update (install) -c file://Path_to_your_channel/repo.continuum.io/pkgs/free --override-channels --offline 包名称</span><br></pre></td></tr></table></figure>
+<p>注意到repo等路径是你安装官网的路径结构下载下来的结果，而指定不用深入到构架（linux64）目录下，系统会自动检测。</p>
+<p>如果下次想要更新本地库，则可以再用rsnyc重复下上述过程。</p>
+<h3 id="conda配置"><a href="#conda配置" class="headerlink" title="conda配置"></a>conda配置</h3><p>每次安装更新包要输入一大堆太麻烦，我们通过修改~/.condarc来改变默认寻找的channel</p>
+<p>在~/.condarc中加入如下内容，使其覆盖原有的default channel（repo.continuum.io/pkgs/free/linux-64），并默认不再联网进行搜索</p>
+<pre><code>channels:
+  - file:///Path_to_your_channel/repo.continuum.io/pkgs/free
+
+ offline: True
+</code></pre><p>以后再要安装（更新）时像平时那样即可（conda install/update 包名称）。</p>
+<p>参考网站：<a href="https://stackoverflow.com/questions/37391824/simply-use-python-anaconda-without-internet-connection" target="_blank" rel="noopener">stackoverflow</a>、<a href="https://conda.io/docs/config.html" target="_blank" rel="noopener">conda document</a></p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()" title="关闭">×</a>
+            <div class="shang_tit">
+              <p>碰并增长</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/conda-without-internet.html">在无法连外网的服务器上安装Python包（conda）</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 MeteoBoy4 的个人博客">MeteoBoy4</a></p>
+        <p><span>发布时间:</span>2017年07月21日 - 20时51分</p>
+        <p><span>最后更新:</span>2019年08月11日 - 03时12分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/conda-without-internet.html" title="在无法连外网的服务器上安装Python包（conda）">http://www.meteoboy.com/conda-without-internet.html</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.meteoboy.com/conda-without-internet.html　　作者: MeteoBoy4" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/vorticity-divergence-in-wrf-grid-formula.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          WRF格点下计算涡度散度谜团——公式篇
+        
+      </div>
+    </a>
+  
+  
+    <a href="/90m-topo-in-WRF.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">WRF中使用SRTM90米地形高程资料</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#缘起"><span class="toc-number">1.</span> <span class="toc-text">缘起</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#步骤"><span class="toc-number">2.</span> <span class="toc-text">步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装anaconda"><span class="toc-number">2.1.</span> <span class="toc-text">安装anaconda</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#建立本地库镜像"><span class="toc-number">2.2.</span> <span class="toc-text">建立本地库镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在服务器上测试"><span class="toc-number">2.3.</span> <span class="toc-text">在服务器上测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#conda配置"><span class="toc-number">2.4.</span> <span class="toc-text">conda配置</span></a></li></ol></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/vorticity-divergence-in-wrf-grid-formula.html" title="上一篇: WRF格点下计算涡度散度谜团——公式篇">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/90m-topo-in-WRF.html" title="下一篇: WRF中使用SRTM90米地形高程资料">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/vs-code-remote-development.html">使用VS Code进行远程开发</a></li><li class="post-list-item"><a class="post-list-link" href="/build-vps-on-digital-ocean.html">在Digital Ocean上架设属于你的云服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/assimilate-precipitation-data-in-wrfda-4dvar.html">WRFDA四维变分同化降水资料</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-practial.html">WRF格点下计算涡度散度谜团——操作篇</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-formula.html">WRF格点下计算涡度散度谜团——公式篇</a></li><li class="post-list-item"><a class="post-list-link" href="/conda-without-internet.html">在无法连外网的服务器上安装Python包（conda）</a></li><li class="post-list-item"><a class="post-list-link" href="/90m-topo-in-WRF.html">WRF中使用SRTM90米地形高程资料</a></li><li class="post-list-item"><a class="post-list-link" href="/ssh-and-so-on.html">ssh那点事儿</a></li><li class="post-list-item"><a class="post-list-link" href="/Linux-Tianjing-sc.html">Linux下登陆天津超算</a></li><li class="post-list-item"><a class="post-list-link" href="/WRF-ERA-Interim.html">使用ERA-Interim驱动WRF3.9</a></li><li class="post-list-item"><a class="post-list-link" href="/hello-world.html">Hello World</a></li></ul>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2019 MeteoBoy4
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >水汽辐合量: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本地降水量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 17;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-93016689-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?68c3286313aafcd56004949332118c3d";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

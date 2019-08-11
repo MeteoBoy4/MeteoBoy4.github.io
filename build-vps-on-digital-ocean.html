@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>在Digital Ocean上架设属于你的云服务器 | MeteoBoy4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="记录了我在Digital Ocean上架设云服务器的过程。">
+<meta name="keywords" content="Linux,VPS,云服务器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Digital Ocean上架设属于你的云服务器">
+<meta property="og:url" content="http://www.meteoboy.com/build-vps-on-digital-ocean.html">
+<meta property="og:site_name" content="MeteoBoy4">
+<meta property="og:description" content="记录了我在Digital Ocean上架设云服务器的过程。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-08-11T03:12:20.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在Digital Ocean上架设属于你的云服务器">
+<meta name="twitter:description" content="记录了我在Digital Ocean上架设云服务器的过程。">
+  
+    <link rel="alternative" href="/atom.xml" title="MeteoBoy4" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.jpg">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">MeteoBoy4</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">书写是为了更好地思考</p>
+        
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">首页</a></li>
+                        
+                            <li><a href="/archives">所有文章</a></li>
+                        
+                            <li><a href="/tags">标签云</a></li>
+                        
+                            <li><a href="/about">我的故事</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                            
+                                <a class="fl zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                            
+                                <a class="fl weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                            
+                                <a class="fl douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Editor/" style="font-size: 10px;">Editor</a> <a href="/tags/Fortran/" style="font-size: 13.33px;">Fortran</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/NCL/" style="font-size: 10px;">NCL</a> <a href="/tags/Python/" style="font-size: 13.33px;">Python</a> <a href="/tags/VPS/" style="font-size: 10px;">VPS</a> <a href="/tags/WRF/" style="font-size: 20px;">WRF</a> <a href="/tags/WRFDA/" style="font-size: 10px;">WRFDA</a> <a href="/tags/云服务器/" style="font-size: 10px;">云服务器</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/同化/" style="font-size: 10px;">同化</a> <a href="/tags/诊断分析/" style="font-size: 13.33px;">诊断分析</a> <a href="/tags/远程开发/" style="font-size: 10px;">远程开发</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://mindhacks.cn/">刘未鹏</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://seisman.info/">seisman</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">热爱气象 热爱编程 更热爱思考</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">MeteoBoy4</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">MeteoBoy4</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">书写是为了更好地思考</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">首页</a></li>
+                
+                    <li><a href="/archives">所有文章</a></li>
+                
+                    <li><a href="/tags">标签云</a></li>
+                
+                    <li><a href="/about">我的故事</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                    
+                        <a class="zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                    
+                        <a class="weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                    
+                        <a class="douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-build-vps-on-digital-ocean" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/build-vps-on-digital-ocean.html" class="article-date">
+      <time datetime="2017-10-07T22:00:16.000Z" itemprop="datePublished">2017-10-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      在Digital Ocean上架设属于你的云服务器
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VPS/">VPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/云服务器/">云服务器</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>记录了我在Digital Ocean上架设云服务器的过程。</p>
+<a id="more"></a>
+<h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>“云”在我们生活中已经众人皆知了，随着技术的发展，云服务器也开始进入“寻常百姓家”了。虽然在研究机构我们有计算集群、超算中心等优质的计算资源，但商业领域则更多使用的是云计算服务商的云服务器。</p>
+<p>现在国内外已有很多厂商在提供云服务，有时候有个物理地址国外的服务器做很多事情会方便很多，这次我们就来体验一下在Digital Ocean上架设云服务器。</p>
+<h2 id="Github学生优惠"><a href="#Github学生优惠" class="headerlink" title="Github学生优惠"></a>Github学生优惠</h2><p>国外很多大的科技公司都为学生提供了丰厚的优惠政策，Github也是其一。从<a href="https://education.github.com/pack" target="_blank" rel="noopener">其页面上</a>可以看到，Github的黄书包里藏着十分多大牌厂商的优惠券！其中Github的无限私人库和Travis CI的私人持续集成已经十分诱人了，今天我们要来使用<a href="digitalocean.com">Digital Ocean</a>的充值券，之前每个学生可以有100美元的充值券，现在只有50美元了，心痛~~</p>
+<p>取得方法也很简单，使用学生邮箱，基本上秒回通过，点击Get your pack，一会儿便可看到你的DO优惠券。</p>
+<h2 id="Digital-Ocean"><a href="#Digital-Ocean" class="headerlink" title="Digital Ocean"></a>Digital Ocean</h2><p>Digital Ocean是近来新兴的云服务提供商，其总部位于纽约，服务器则遍布全世界，近年来取得了极快的发展。</p>
+<p>不急着登陆官网，在注册之前…</p>
+<p>——————————————————广告的分割线—————————————————</p>
+<p>读者可以点击<a href="https://m.do.co/c/90ba86a79caa" target="_blank" rel="noopener">我的链接</a>，通过在这个页面注册，我和你可以各自获得10美元的优惠券！</p>
+<p>——————————————————广告的分割线—————————————————</p>
+<p>注册时，除了邮箱和地址（地址需要写真实情况，因为如果检测到你的IP不在你填写的地址，很可能会封号），还需要填写信用卡信息（一张信用卡只能注册一个账号），今后扣款都会走这一张信用卡（目前不支持银联）。</p>
+<p>注册完成后进入个人主页，有趣的是由于其网站意为数据海洋，所以你创建云服务器时的行为被称为“create droplet”。点击这个按钮，便可以开始创建你的云服务器啦，选择主机名（服务器的昵称）、套餐（价格越高配置越豪华）、节点地理位置、操作系统（主流的Linux发行版都有）。在这里建议不要使用密码的方式，而直接选择Add ssh key，填入你想要用来连接电脑的公钥（使用ssh-keygen -t rsa后在~/.ssh/id_rsa.pub中）。</p>
+<p>点击创建，你的云服务器就创建成功啦！网站上会显示你的IP，默认用户为root用户。</p>
+<p>接下来你可以做一些基础的安全性和功能性配置，比如创建普通用户、开启防火墙、同步你所在时区的时间、创建swap文件等等，这些都可以在DO的Tutorial里得到详细帮助。</p>
+<p>Enjoy!</p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()" title="关闭">×</a>
+            <div class="shang_tit">
+              <p>碰并增长</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/build-vps-on-digital-ocean.html">在Digital Ocean上架设属于你的云服务器</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 MeteoBoy4 的个人博客">MeteoBoy4</a></p>
+        <p><span>发布时间:</span>2017年10月07日 - 22时00分</p>
+        <p><span>最后更新:</span>2019年08月11日 - 03时12分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/build-vps-on-digital-ocean.html" title="在Digital Ocean上架设属于你的云服务器">http://www.meteoboy.com/build-vps-on-digital-ocean.html</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.meteoboy.com/build-vps-on-digital-ocean.html　　作者: MeteoBoy4" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/vs-code-remote-development.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          使用VS Code进行远程开发
+        
+      </div>
+    </a>
+  
+  
+    <a href="/assimilate-precipitation-data-in-wrfda-4dvar.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">WRFDA四维变分同化降水资料</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#缘起"><span class="toc-number">1.</span> <span class="toc-text">缘起</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Github学生优惠"><span class="toc-number">2.</span> <span class="toc-text">Github学生优惠</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Digital-Ocean"><span class="toc-number">3.</span> <span class="toc-text">Digital Ocean</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/vs-code-remote-development.html" title="上一篇: 使用VS Code进行远程开发">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/assimilate-precipitation-data-in-wrfda-4dvar.html" title="下一篇: WRFDA四维变分同化降水资料">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/vs-code-remote-development.html">使用VS Code进行远程开发</a></li><li class="post-list-item"><a class="post-list-link" href="/build-vps-on-digital-ocean.html">在Digital Ocean上架设属于你的云服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/assimilate-precipitation-data-in-wrfda-4dvar.html">WRFDA四维变分同化降水资料</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-practial.html">WRF格点下计算涡度散度谜团——操作篇</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-formula.html">WRF格点下计算涡度散度谜团——公式篇</a></li><li class="post-list-item"><a class="post-list-link" href="/conda-without-internet.html">在无法连外网的服务器上安装Python包（conda）</a></li><li class="post-list-item"><a class="post-list-link" href="/90m-topo-in-WRF.html">WRF中使用SRTM90米地形高程资料</a></li><li class="post-list-item"><a class="post-list-link" href="/ssh-and-so-on.html">ssh那点事儿</a></li><li class="post-list-item"><a class="post-list-link" href="/Linux-Tianjing-sc.html">Linux下登陆天津超算</a></li><li class="post-list-item"><a class="post-list-link" href="/WRF-ERA-Interim.html">使用ERA-Interim驱动WRF3.9</a></li><li class="post-list-item"><a class="post-list-link" href="/hello-world.html">Hello World</a></li></ul>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2019 MeteoBoy4
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >水汽辐合量: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本地降水量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 17;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-93016689-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?68c3286313aafcd56004949332118c3d";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

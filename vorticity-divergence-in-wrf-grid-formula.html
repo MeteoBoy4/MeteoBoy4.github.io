@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>WRF格点下计算涡度散度谜团——公式篇 | MeteoBoy4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="描述了WRF原生格点下计算涡度散度的迷惑和思考。">
+<meta name="keywords" content="WRF,诊断分析,Fortran">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WRF格点下计算涡度散度谜团——公式篇">
+<meta property="og:url" content="http://www.meteoboy.com/vorticity-divergence-in-wrf-grid-formula.html">
+<meta property="og:site_name" content="MeteoBoy4">
+<meta property="og:description" content="描述了WRF原生格点下计算涡度散度的迷惑和思考。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.meteoboy.com/images/Arakawa_C.png">
+<meta property="og:image" content="http://www.meteoboy.com/images/vorticity.png">
+<meta property="og:image" content="http://www.meteoboy.com/images/divergence.png">
+<meta property="og:updated_time" content="2019-08-11T03:12:20.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WRF格点下计算涡度散度谜团——公式篇">
+<meta name="twitter:description" content="描述了WRF原生格点下计算涡度散度的迷惑和思考。">
+<meta name="twitter:image" content="http://www.meteoboy.com/images/Arakawa_C.png">
+  
+    <link rel="alternative" href="/atom.xml" title="MeteoBoy4" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.jpg">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">MeteoBoy4</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">书写是为了更好地思考</p>
+        
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">首页</a></li>
+                        
+                            <li><a href="/archives">所有文章</a></li>
+                        
+                            <li><a href="/tags">标签云</a></li>
+                        
+                            <li><a href="/about">我的故事</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                            
+                                <a class="fl zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                            
+                                <a class="fl weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                            
+                                <a class="fl douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Editor/" style="font-size: 10px;">Editor</a> <a href="/tags/Fortran/" style="font-size: 13.33px;">Fortran</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/NCL/" style="font-size: 10px;">NCL</a> <a href="/tags/Python/" style="font-size: 13.33px;">Python</a> <a href="/tags/VPS/" style="font-size: 10px;">VPS</a> <a href="/tags/WRF/" style="font-size: 20px;">WRF</a> <a href="/tags/WRFDA/" style="font-size: 10px;">WRFDA</a> <a href="/tags/云服务器/" style="font-size: 10px;">云服务器</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/同化/" style="font-size: 10px;">同化</a> <a href="/tags/诊断分析/" style="font-size: 13.33px;">诊断分析</a> <a href="/tags/远程开发/" style="font-size: 10px;">远程开发</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://mindhacks.cn/">刘未鹏</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://seisman.info/">seisman</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">热爱气象 热爱编程 更热爱思考</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">MeteoBoy4</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">MeteoBoy4</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">书写是为了更好地思考</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">首页</a></li>
+                
+                    <li><a href="/archives">所有文章</a></li>
+                
+                    <li><a href="/tags">标签云</a></li>
+                
+                    <li><a href="/about">我的故事</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                    
+                        <a class="zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                    
+                        <a class="weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                    
+                        <a class="douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-vorticity-divergence-in-wrf-grid-formula" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/vorticity-divergence-in-wrf-grid-formula.html" class="article-date">
+      <time datetime="2017-10-03T17:24:08.000Z" itemprop="datePublished">2017-10-03</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      WRF格点下计算涡度散度谜团——公式篇
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fortran/">Fortran</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WRF/">WRF</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/诊断分析/">诊断分析</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>描述了WRF原生格点下计算涡度散度的迷惑和思考。</p>
+<a id="more"></a>
+<h2 id="迷惑"><a href="#迷惑" class="headerlink" title="迷惑"></a>迷惑</h2><p>涡度和散度算是最常用、最普遍的风场诊断量了，在再分析资料的等经纬度网格下，计算涡度和散度只需采用简单的中央差分，但是到了WRF的Arakawa C水平网格并且考虑地图投影时，我就被涡度和散度的计算给搞糊涂了。</p>
+<h2 id="WRF格点"><a href="#WRF格点" class="headerlink" title="WRF格点"></a>WRF格点</h2><p>WRF采用Arakawa C交错格点，水平面上，UV风速在其垂直方向相对于动热力量被交错了半个格距，热动力量所在格点称为质量格点（mass point），u（v、w）所在位置称为u（v、w）格点，这样做的好处是风速采用中央差分空间求导时只需要用相邻u（v、w）格点的量进行，格距为一倍模式格距，对应导数点正好落在质量格点上，在不需要增加计算量的情况下提高了求导的空间精度。</p>
+<p><img src="/images/Arakawa_C.png" alt="C_Grid"></p>
+<p>另外，为了将地球球面转换为WRF的计算平面，需要采用地图投影，由于地球球面无法完美展开到连续平面上，故任何地图投影都会产生变形。WRF中采用了保角变换，保证地图投影的角度关系不变，但是空间距离会变形。变形的程度用地图放大系数（map scale factor）来表示</p>
+<p>$$m = \frac{WRF格距}{地球球面距离}$$</p>
+<p>在WRF的输出文件中会包含各个格点上的地图放大系数，可以直接用NCL读取。</p>
+<h2 id="正交曲线坐标系"><a href="#正交曲线坐标系" class="headerlink" title="正交曲线坐标系"></a>正交曲线坐标系</h2><p>上述的地图投影坐标系其实是一种<a href="https://en.wikipedia.org/wiki/Curvilinear_coordinates" target="_blank" rel="noopener">正交曲线坐标系</a>，球坐标系也是它的一员。在数学家的口中，常常用拉密系数来表达放大系数。坐标变元$dq_j$要乘以拉密系数才等于坐标线元。<strong>在数值上拉密系数等于地图放大系数的倒数</strong>。</p>
+<p>在正交曲线坐标系下，其矢量运算有着一套自有的方法，其数学推导不详，现给出求涡度和散度的公式</p>
+<p><img src="/images/vorticity.png" alt="vorticity"></p>
+<p><img src="/images/divergence.png" alt="divergence"></p>
+<p>由于我们一般首先关注水平散度和垂直涡度，故将上述公式的二维形式导出。</p>
+<p>\begin{equation}<br>\triangledown_{h}\times \boldsymbol{V} = \frac{1}{H_1H_2}<br>(\frac{\partial(H_2u_2)}{\partial q_1} -<br>\frac{\partial(H_1u_1)}{\partial q_2})\boldsymbol{e_3}<br>\end{equation}</p>
+<p>\begin{equation}<br>\triangledown_{h}\centerdot \boldsymbol{V} = \frac{1}<br>{H_1H_2H_3}(\frac{\partial(H_2H_3u_1)}{\partial q_1} +<br>\frac{\partial(H_3H_1u_2)}{\partial q_2})<br>\end{equation}</p>
+<p>这里值得注意的是，在垂直方向上未做投影，故$H_3=1$。而WRF中<em>Lambert conformal，polar stereographic，和Mercator</em>投影是<strong>各向同性</strong>的，即一个格点上x、y方向的地图放大系数是相同的，故$H_1 = H_2$。</p>
+<h2 id="交错格点"><a href="#交错格点" class="headerlink" title="交错格点"></a>交错格点</h2><p>既然WRF使用了交错格点，我们就希望可以尽量利用到其优势，使得中央差分求导的空间精度尽量地高。另外，由于涡度与散度常常需要与热动力量进行进一步计算，故我们希望求出的点对应在质量格点的位置。</p>
+<p>对于散度来说情况比较明朗，因为空间的求导方向与格点的交错方向正好是一致的（见WRF格点说明），直接对相邻格点进行一倍格距的求导，所求点就对应着质量格点上的导数值，直接套用正交曲线坐标系的公式即可。</p>
+<p>对于涡度来说，情况就要复杂一些了，我们希望求出的涡度值也对应在模式质量格点上，而求导方向与格点交错方向是正交的（见WRF格点说明），如果直接使用一倍格距对相邻格点的值进行求导，对应导数的位置在格点的四个角上，既不是质量格点，也不对应u、v格点，而且很难再通过平均等手段将其转换到质量格点上。不得已我们只好采取2倍格距，使求得导数值位置对应到“中央的”相应u（v）格点上去，然后再通过质量格点两侧u（v）格点上导数值的平均，求出质量格点上的对应导数值。注意到，这样求出的涡度空间精度低，还进行过一次平均，与散度相比粗略了很多。</p>
+<h2 id="参考代码"><a href="#参考代码" class="headerlink" title="参考代码"></a>参考代码</h2><p>通过以上的讨论，求涡度与散度的思路基本明确，下面先给出较简单的散度的Fortran参考代码片段，再给出涡度参考代码片段。<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DO</span> k = <span class="number">1</span>,nz</span><br><span class="line">    <span class="keyword">DO</span> j = <span class="number">1</span>,ny</span><br><span class="line">        <span class="keyword">DO</span> i = <span class="number">1</span>,nx</span><br><span class="line">            mm = msft(i,j)*msft(i,j)</span><br><span class="line">            dudx = ( u(i+<span class="number">1</span>,j,k)/msfu(i+<span class="number">1</span>,j) - u(i,j,k)/msfu(i,j) )/dx*mm</span><br><span class="line">            dvdy = ( v(i,j+<span class="number">1</span>,k)/msfv(i,j+<span class="number">1</span>) - v(i,j,k)/msfv(i,j) )/dy*mm</span><br><span class="line">            diver = dudx + dvdy</span><br><span class="line">            div(i,j,k) = diver*<span class="number">1.D5</span></span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">DO</span></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">DO</span></span><br><span class="line"><span class="keyword">END</span> <span class="keyword">DO</span></span><br></pre></td></tr></table></figure></p>
+<p>注意代码中msft(u,v)对应着质量、u、v格点的地图放大系数。</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DO</span> k = <span class="number">1</span>,nz</span><br><span class="line">    <span class="keyword">DO</span> j = <span class="number">1</span>,ny</span><br><span class="line">        jp1 = <span class="built_in">MIN</span>(j+<span class="number">1</span>, ny)</span><br><span class="line">        jm1 = <span class="built_in">MAX</span>(j-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">        dsy = (jp1 - jm1) * dy</span><br><span class="line">        <span class="keyword">DO</span> i = <span class="number">1</span>,nx</span><br><span class="line">            ip1 = <span class="built_in">MIN</span>(i+<span class="number">1</span>, nx)</span><br><span class="line">            im1 = <span class="built_in">MAX</span>(i-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">            dsx = (ip1 - im1) * dx</span><br><span class="line">            mm = msft(i,j)*msft(i,j)</span><br><span class="line">            dudy = <span class="number">0.5D0</span>*(u(i,jp1,k)/msfu(i,jp1) + u(i+<span class="number">1</span>,jp1,k)/msfu(i+<span class="number">1</span>,jp1) - &amp;</span><br><span class="line">                  u(i,jm1,k)/msfu(i,jm1) - u(i+<span class="number">1</span>,jm1,k)/msfu(i+<span class="number">1</span>,jm1))/dsy*mm</span><br><span class="line">            dvdx = <span class="number">0.5D0</span>*(v(ip1,j,k)/msfv(ip1,j) + v(ip1,j+<span class="number">1</span>,k)/msfv(ip1,j+<span class="number">1</span>) - &amp;</span><br><span class="line">                  v(im1,j,k)/msfv(im1,j) - v(im1,j+<span class="number">1</span>,k)/msfv(im1,j+<span class="number">1</span>))/dsx*mm</span><br><span class="line">            vorter = dvdx - dudy</span><br><span class="line">            vor(i,j,k) = vorter*<span class="number">1.D5</span></span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">DO</span></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">DO</span></span><br><span class="line"><span class="keyword">END</span> <span class="keyword">DO</span></span><br></pre></td></tr></table></figure>
+<p>代码中jp1,jm1,ip1,im1的出现是为了在模式边界上采用one-sided差分求导而中间采用二倍格距中央差分求导而设计的。</p>
+<h2 id="参考网站"><a href="#参考网站" class="headerlink" title="参考网站"></a>参考网站</h2><p><a href="https://github.com/NCAR/wrf-python/blob/develop/fortran/wrf_pvo.f90" target="_blank" rel="noopener">wrf-python</a>、<a href="https://baike.baidu.com/item/%E6%AE%B5%E6%98%8E%E9%93%BF/16543016?fr=aladdin" target="_blank" rel="noopener">南信大段明铿老师</a>课件</p>
+<p>特别感谢南京大学的<a href="https://github.com/weinihou" target="_blank" rel="noopener">weinihou</a>的答疑解惑和耐心指导，没有你便不会有这篇博客。</p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()" title="关闭">×</a>
+            <div class="shang_tit">
+              <p>碰并增长</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/vorticity-divergence-in-wrf-grid-formula.html">WRF格点下计算涡度散度谜团——公式篇</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 MeteoBoy4 的个人博客">MeteoBoy4</a></p>
+        <p><span>发布时间:</span>2017年10月03日 - 17时24分</p>
+        <p><span>最后更新:</span>2019年08月11日 - 03时12分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/vorticity-divergence-in-wrf-grid-formula.html" title="WRF格点下计算涡度散度谜团——公式篇">http://www.meteoboy.com/vorticity-divergence-in-wrf-grid-formula.html</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.meteoboy.com/vorticity-divergence-in-wrf-grid-formula.html　　作者: MeteoBoy4" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/vorticity-divergence-in-wrf-grid-practial.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          WRF格点下计算涡度散度谜团——操作篇
+        
+      </div>
+    </a>
+  
+  
+    <a href="/conda-without-internet.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">在无法连外网的服务器上安装Python包（conda）</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#迷惑"><span class="toc-number">1.</span> <span class="toc-text">迷惑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WRF格点"><span class="toc-number">2.</span> <span class="toc-text">WRF格点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#正交曲线坐标系"><span class="toc-number">3.</span> <span class="toc-text">正交曲线坐标系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#交错格点"><span class="toc-number">4.</span> <span class="toc-text">交错格点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考代码"><span class="toc-number">5.</span> <span class="toc-text">参考代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考网站"><span class="toc-number">6.</span> <span class="toc-text">参考网站</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/vorticity-divergence-in-wrf-grid-practial.html" title="上一篇: WRF格点下计算涡度散度谜团——操作篇">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/conda-without-internet.html" title="下一篇: 在无法连外网的服务器上安装Python包（conda）">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/vs-code-remote-development.html">使用VS Code进行远程开发</a></li><li class="post-list-item"><a class="post-list-link" href="/build-vps-on-digital-ocean.html">在Digital Ocean上架设属于你的云服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/assimilate-precipitation-data-in-wrfda-4dvar.html">WRFDA四维变分同化降水资料</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-practial.html">WRF格点下计算涡度散度谜团——操作篇</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-formula.html">WRF格点下计算涡度散度谜团——公式篇</a></li><li class="post-list-item"><a class="post-list-link" href="/conda-without-internet.html">在无法连外网的服务器上安装Python包（conda）</a></li><li class="post-list-item"><a class="post-list-link" href="/90m-topo-in-WRF.html">WRF中使用SRTM90米地形高程资料</a></li><li class="post-list-item"><a class="post-list-link" href="/ssh-and-so-on.html">ssh那点事儿</a></li><li class="post-list-item"><a class="post-list-link" href="/Linux-Tianjing-sc.html">Linux下登陆天津超算</a></li><li class="post-list-item"><a class="post-list-link" href="/WRF-ERA-Interim.html">使用ERA-Interim驱动WRF3.9</a></li><li class="post-list-item"><a class="post-list-link" href="/hello-world.html">Hello World</a></li></ul>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2019 MeteoBoy4
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >水汽辐合量: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本地降水量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 17;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-93016689-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?68c3286313aafcd56004949332118c3d";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

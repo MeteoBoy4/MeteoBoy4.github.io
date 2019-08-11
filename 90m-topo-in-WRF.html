@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>WRF中使用SRTM90米地形高程资料 | MeteoBoy4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="介绍了如何在WRF中使用SRTM90米高程资料，使之可以被geogrid利用。">
+<meta name="keywords" content="WRF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WRF中使用SRTM90米地形高程资料">
+<meta property="og:url" content="http://www.meteoboy.com/90m-topo-in-WRF.html">
+<meta property="og:site_name" content="MeteoBoy4">
+<meta property="og:description" content="介绍了如何在WRF中使用SRTM90米高程资料，使之可以被geogrid利用。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.meteoboy.com/images/3s_30s.png">
+<meta property="og:updated_time" content="2019-08-11T03:12:20.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WRF中使用SRTM90米地形高程资料">
+<meta name="twitter:description" content="介绍了如何在WRF中使用SRTM90米高程资料，使之可以被geogrid利用。">
+<meta name="twitter:image" content="http://www.meteoboy.com/images/3s_30s.png">
+  
+    <link rel="alternative" href="/atom.xml" title="MeteoBoy4" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.jpg">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">MeteoBoy4</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">书写是为了更好地思考</p>
+        
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">首页</a></li>
+                        
+                            <li><a href="/archives">所有文章</a></li>
+                        
+                            <li><a href="/tags">标签云</a></li>
+                        
+                            <li><a href="/about">我的故事</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                            
+                                <a class="fl zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                            
+                                <a class="fl weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                            
+                                <a class="fl douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Editor/" style="font-size: 10px;">Editor</a> <a href="/tags/Fortran/" style="font-size: 13.33px;">Fortran</a> <a href="/tags/Linux/" style="font-size: 16.67px;">Linux</a> <a href="/tags/NCL/" style="font-size: 10px;">NCL</a> <a href="/tags/Python/" style="font-size: 13.33px;">Python</a> <a href="/tags/VPS/" style="font-size: 10px;">VPS</a> <a href="/tags/WRF/" style="font-size: 20px;">WRF</a> <a href="/tags/WRFDA/" style="font-size: 10px;">WRFDA</a> <a href="/tags/云服务器/" style="font-size: 10px;">云服务器</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/同化/" style="font-size: 10px;">同化</a> <a href="/tags/诊断分析/" style="font-size: 13.33px;">诊断分析</a> <a href="/tags/远程开发/" style="font-size: 10px;">远程开发</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://mindhacks.cn/">刘未鹏</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://seisman.info/">seisman</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">热爱气象 热爱编程 更热爱思考</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">MeteoBoy4</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">MeteoBoy4</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">书写是为了更好地思考</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">首页</a></li>
+                
+                    <li><a href="/archives">所有文章</a></li>
+                
+                    <li><a href="/tags">标签云</a></li>
+                
+                    <li><a href="/about">我的故事</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:meteoboy4@gmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/MeteoBoy4" title="github">github</a>
+                    
+                        <a class="zhihu" target="_blank" href="https://www.zhihu.com/people/LichKing/activities" title="zhihu">zhihu</a>
+                    
+                        <a class="weibo" target="_blank" href="http://weibo.com/u/1955932927?refer_flag=1001030201_&is_all=1" title="weibo">weibo</a>
+                    
+                        <a class="douban" target="_blank" href="https://www.douban.com/people/45959129/" title="douban">douban</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-90m-topo-in-WRF" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/90m-topo-in-WRF.html" class="article-date">
+      <time datetime="2017-07-19T19:08:57.000Z" itemprop="datePublished">2017-07-19</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      WRF中使用SRTM90米地形高程资料
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WRF/">WRF</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>介绍了如何在WRF中使用SRTM90米高程资料，使之可以被geogrid利用。</p>
+<a id="more"></a>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>WRF中自带地形高度的最高分辨率为30弧秒，对应约900米。要想使用更高分辨率的地形资料，则必须自己手动添加。</p>
+<p>SRTM全称是Shuttle Radar Topography Mission，是由NASA和NIMA以及德国、意大利航天机构共同合作完成的对地遥感测量计划。全球采样间隔为90米，美国本土为30米。</p>
+<h2 id="数据下载"><a href="#数据下载" class="headerlink" title="数据下载"></a>数据下载</h2><p>可以下载SRTM的网站有很多，这里选取<a href="http://srtm.csi.cgiar.org/" target="_blank" rel="noopener">CGIAR-CSI</a>的入口，可以下载到经过插值补缺和质量控制的SRTM90m分辨率高程资料，在Download页面可以勾选或者鼠标框选感兴趣的地理范围，对应数据将以5度乘以5度的栅格提供下载；可以选择使用wget或者ftp进行下载。注意为了之后拼接的方便，这里选择GeoTiff格式进行下载。</p>
+<h2 id="数据拼接"><a href="#数据拼接" class="headerlink" title="数据拼接"></a>数据拼接</h2><p>由于下载的数据是离散的栅格，需要对其进行拼接，这里采用GDAL的python binding进行，利用conda安装Python-GDAL模块，然后可以使用gdal_merge.py命令行，使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdal_merge.py *.tif -o output.tif -a_nodata -32768</span><br></pre></td></tr></table></figure>
+<p>对数据进行空间拼接，这里指定原缺省值-32768为新拼接的tiff文件的缺省值。这样，便可得到整个空间域的高程资料。</p>
+<h2 id="转化为WPS可读格式"><a href="#转化为WPS可读格式" class="headerlink" title="转化为WPS可读格式"></a>转化为WPS可读格式</h2><p>WPS中的geogrid读取的资料有一套自己的特殊格式，具体参见<a href="http://www2.mmm.ucar.edu/wrf/users/docs/user_guide_V3/contents.html" target="_blank" rel="noopener">User’s Guide</a>。</p>
+<p>这里我们使用openwfm的小程序<a href="https://github.com/openwfm/convert_geotiff" target="_blank" rel="noopener">convert_geotiff</a>将geotiff格式转化为WPS可用的格式。由于需要读取并转换geotiff文件，在安装和使用convert_geotiff时必然需要安装libgeotiff，可以通过yum进行安装，但是在我的CentOS上convert_geotiff的configure会报错（提示找不到libgeotiff），如若此需要手动安装libgeotiff并将其目录告知convert_geotiff，而在安装libgeotiff时需要依赖proj库与libtiff库。</p>
+<p>安装完convert_geotiff库后便可进行格式转化。在namelist.wps对应的geog_data_res目录下创建topo_3s子目录，将上一步拼接的tiff文件移动至这一目录，再使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">convert_geotiff -w 4 -t 1500 -u <span class="string">"meters MSL"</span> -d <span class="string">"3s topography"</span> -b 0 -m -32768 srtm.tif</span><br></pre></td></tr></table></figure>
+<p>上述选项可参照convert_geotiff –help的说明，其中注意到我们依旧延续了-32768作为缺省值，这样可以使得WPS正确地识别海洋等缺省区域。成功执行后，会在当前目录生成WPS格式地形文件与对应index。</p>
+<h2 id="使用高分辨地形"><a href="#使用高分辨地形" class="headerlink" title="使用高分辨地形"></a>使用高分辨地形</h2><p>光放置文件还不够，需要让geogrid知道在哪里找到这一地形。</p>
+<p>geogrid是在WPS/geogrid下GEOGRID.TBL的引导下寻找各个时间不变量的目录和插值方法等信息的，我们将HGT_M下对应位置增加</p>
+<pre><code>interp_option=3s:average_gcell(4.0)+four_pt+average_4pt
+</code></pre><p>与</p>
+<pre><code>rel_path=3s:topo_3s/
+</code></pre><p>然后在namelist.wps的geog_data_res中想要使用高分辨地形的domain对应的column填写“3s+30s”，这理论上会使得geogrid.exe首先寻找新地形资料，再寻求30s的地形资料。</p>
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>下图分别为中心点为东经115度，北纬40度，网格距90米，500乘以500的WRF网格上geogrid.exe插值得到的地形高度场，左图为基于STRM3s得到的，右图为WRF自带的30s地形插值得到的</p>
+<p><img src="/images/3s_30s.png" alt="30s"></p>
+<h2 id="顺带发现"><a href="#顺带发现" class="headerlink" title="顺带发现"></a>顺带发现</h2><p>自从WRF3.8以后，由于引入了USGS GMTED2010的30秒地形数据，所以原有的30s、2~10m数据前面均加上了gtopo_字样，所以在geog_data_res填写时应该写’gtopo_30s(2m,5m,10m)’，如果直接填’30s、2m’等geogrid.exe会找不到对应的source而使用默认的地形资料（USGS GMTED2010的30秒），但不会报错，所以你以为用了2m地形，其实还是在用USGS的30s，一定要注意！</p>
+<p>3.8以前的应该不存在这个修改，直接填写30s等即可。</p>
+<h2 id="遗留问题"><a href="#遗留问题" class="headerlink" title="遗留问题"></a>遗留问题</h2><p>由于WPS格式的geogrid资料只允许xy方向上各99999个格点，3s的地形无法在99999内将全球包裹进去，所以只能先包裹一部分（或者分几个区域命名不同的文件夹名），而在3s文件区域边界上会出现3s地形文件无法覆盖到的区域乱码的现象，留待解决。</p>
+<p>参考网站：<a href="https://wrfexplorer.wordpress.com/2015/03/24/high-resolution-topography/" target="_blank" rel="noopener">wrfexplorer</a></p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()" title="关闭">×</a>
+            <div class="shang_tit">
+              <p>碰并增长</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/90m-topo-in-WRF.html">WRF中使用SRTM90米地形高程资料</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 MeteoBoy4 的个人博客">MeteoBoy4</a></p>
+        <p><span>发布时间:</span>2017年07月19日 - 19时08分</p>
+        <p><span>最后更新:</span>2019年08月11日 - 03时12分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/90m-topo-in-WRF.html" title="WRF中使用SRTM90米地形高程资料">http://www.meteoboy.com/90m-topo-in-WRF.html</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.meteoboy.com/90m-topo-in-WRF.html　　作者: MeteoBoy4" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/conda-without-internet.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          在无法连外网的服务器上安装Python包（conda）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/ssh-and-so-on.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ssh那点事儿</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#动机"><span class="toc-number">1.</span> <span class="toc-text">动机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据下载"><span class="toc-number">2.</span> <span class="toc-text">数据下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据拼接"><span class="toc-number">3.</span> <span class="toc-text">数据拼接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#转化为WPS可读格式"><span class="toc-number">4.</span> <span class="toc-text">转化为WPS可读格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用高分辨地形"><span class="toc-number">5.</span> <span class="toc-text">使用高分辨地形</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#效果展示"><span class="toc-number">6.</span> <span class="toc-text">效果展示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#顺带发现"><span class="toc-number">7.</span> <span class="toc-text">顺带发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#遗留问题"><span class="toc-number">8.</span> <span class="toc-text">遗留问题</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/conda-without-internet.html" title="上一篇: 在无法连外网的服务器上安装Python包（conda）">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/ssh-and-so-on.html" title="下一篇: ssh那点事儿">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/vs-code-remote-development.html">使用VS Code进行远程开发</a></li><li class="post-list-item"><a class="post-list-link" href="/build-vps-on-digital-ocean.html">在Digital Ocean上架设属于你的云服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/assimilate-precipitation-data-in-wrfda-4dvar.html">WRFDA四维变分同化降水资料</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-practial.html">WRF格点下计算涡度散度谜团——操作篇</a></li><li class="post-list-item"><a class="post-list-link" href="/vorticity-divergence-in-wrf-grid-formula.html">WRF格点下计算涡度散度谜团——公式篇</a></li><li class="post-list-item"><a class="post-list-link" href="/conda-without-internet.html">在无法连外网的服务器上安装Python包（conda）</a></li><li class="post-list-item"><a class="post-list-link" href="/90m-topo-in-WRF.html">WRF中使用SRTM90米地形高程资料</a></li><li class="post-list-item"><a class="post-list-link" href="/ssh-and-so-on.html">ssh那点事儿</a></li><li class="post-list-item"><a class="post-list-link" href="/Linux-Tianjing-sc.html">Linux下登陆天津超算</a></li><li class="post-list-item"><a class="post-list-link" href="/WRF-ERA-Interim.html">使用ERA-Interim驱动WRF3.9</a></li><li class="post-list-item"><a class="post-list-link" href="/hello-world.html">Hello World</a></li></ul>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2019 MeteoBoy4
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >水汽辐合量: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本地降水量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 17;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-93016689-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?68c3286313aafcd56004949332118c3d";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>
